@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>您的专属袜子设计</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="result-card">
+            <h1>🎉 您的专属袜子设计完成了！</h1>
+            
+            <div class="result-content">
+                <div class="design-image">
+                    <img src="{{ image_url }}" alt="您的袜子设计" class="sock-image">
+                </div>
+                
+                <div class="design-description">
+                    <h2>🎯 您的个人特征分析</h2>
+                    <div class="user-tags">
+                        <div class="tag-item">
+                            <span class="tag-label">性别:</span>
+                            <span class="tag-value">{{ user_tags.gender }}</span>
+                        </div>
+                        <div class="tag-item">
+                            <span class="tag-label">风格:</span>
+                            <span class="tag-value">{{ user_tags.style }}</span>
+                        </div>
+                        <div class="tag-item">
+                            <span class="tag-label">气质:</span>
+                            <span class="tag-value">{{ user_tags.vibe }}</span>
+                        </div>
+                        <div class="tag-item">
+                            <span class="tag-label">颜色:</span>
+                            <span class="tag-value">{{ user_tags.color_palette }}</span>
+                        </div>
+                    </div>
+                    
+                    <h2>🧦 您的专属袜子设计</h2>
+                    <div class="sock-tags">
+                        <div class="tag-item">
+                            <span class="tag-label">形状:</span>
+                            <span class="tag-value">{{ sock_tags.shape }}</span>
+                        </div>
+                        <div class="tag-item">
+                            <span class="tag-label">材质:</span>
+                            <span class="tag-value">{{ sock_tags.material }}</span>
+                        </div>
+                        <div class="tag-item">
+                            <span class="tag-label">图案:</span>
+                            <span class="tag-value">{{ sock_tags.pattern }}</span>
+                        </div>
+                        <div class="tag-item">
+                            <span class="tag-label">颜色:</span>
+                            <span class="tag-value">{{ sock_tags.color }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button onclick="downloadImage()" class="download-btn">
+                    📥 下载设计图
+                </button>
+                <a href="/" class="new-design-btn">
+                    🔄 设计新袜子
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadImage() {
+            const imageUrl = "{{ image_url }}";
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = 'my-custom-sock-design.jpg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>

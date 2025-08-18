@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>袜子个性化设计</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="upload-card">
+            <h1>🧦 袜子个性化设计</h1>
+            <p class="subtitle">上传您的照片，我们为您设计独一无二的袜子！</p>
+            
+            <form method="POST" enctype="multipart/form-data" class="upload-form">
+                <div class="upload-section">
+                    <h3>👤 上传您的照片（用于风格分析）</h3>
+                    <div class="upload-area" id="userUploadArea">
+                        <div class="upload-content">
+                            <div class="upload-icon">📷</div>
+                            <p>点击或拖拽您的照片到这里</p>
+                            <p class="upload-hint">用于分析您的风格偏好</p>
+                        </div>
+                        <input type="file" name="user_photo" id="userPhotoInput" accept="image/*">
+                    </div>
+                </div>
+                
+                <div class="info-section">
+                    <h3>🧦 袜子生成说明</h3>
+                    <p class="info-text">
+                        系统将使用预设的袜子模板作为参考，结合您的风格偏好，
+                        生成个性化的袜子设计。这样可以确保生成效果的一致性和质量。
+                    </p>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    开始设计我的袜子 ✨
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const userUploadArea = document.getElementById('userUploadArea');
+        const userPhotoInput = document.getElementById('userPhotoInput');
+
+        // 用户照片上传区域
+        userUploadArea.addEventListener('click', () => {
+            userPhotoInput.click();
+        });
+
+        userUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            userUploadArea.classList.add('drag-over');
+        });
+
+        userUploadArea.addEventListener('dragleave', () => {
+            userUploadArea.classList.remove('drag-over');
+        });
+
+        userUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            userUploadArea.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                userPhotoInput.files = files;
+                updateFileName(files[0].name, userUploadArea);
+            }
+        });
+
+        userPhotoInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                updateFileName(e.target.files[0].name, userUploadArea);
+            }
+        });
+
+        function updateFileName(fileName, uploadArea) {
+            const uploadContent = uploadArea.querySelector('.upload-content p');
+            uploadContent.textContent = `已选择: ${fileName}`;
+        }
+    </script>
+</body>
+</html>
