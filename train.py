@@ -12,15 +12,10 @@ import base64
 from flask import Flask, render_template, request, jsonify
 from PIL import Image
 import io
+from core.analysis import Analyzer, map_user_to_socks
+from core.generator.base import HFGenerator
 
 app = Flask(__name__)
-
-# API配置
-DOUBAO_API_TOKEN = "cacfd50c-e415-4e69-941b-e22b32705c27"
-DOUBAO_API_URL = "https://ark.cn-beijing.volces.com/api/v3/chat/completions"
-
-STABLE_DIFFUSION_API_KEY = "rPpxeWVde2EUlnw4HBK5ZLwD5RFJxxA97CqG3Ry8W6voEQNq5xQhqsfWeOMi"
-STABLE_DIFFUSION_URL = "https://modelslab.com/api/v6/images/text2img"
 
 def analyze_user_photo(photo):
     """分析用户照片，提取四个维度的特征"""
@@ -68,7 +63,7 @@ def analyze_user_photo(photo):
         
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {DOUBAO_API_TOKEN}"
+            "Authorization": f"Bearer {os.getenv("DOUBAO_API_TOKEN")}"
         }
         
         print("🔍 正在分析用户照片...")
@@ -214,7 +209,7 @@ def generate_sock_image(sock_tags):
     except Exception as e:
         print(f"❌ 生成袜子图片时出错: {e}")
         return generate_placeholder_image(sock_tags)
-
+'''
 def generate_with_stable_diffusion(prompt):
     """使用Stable Diffusion API生成图片"""
     try:
@@ -282,6 +277,7 @@ def generate_placeholder_image(sock_tags):
     except Exception as e:
         print(f"❌ 生成占位符图片时出错: {e}")
         return "https://via.placeholder.com/800x600/666666/FFFFFF?text=袜子生成失败"
+'''
 
 @app.route('/')
 def home():
@@ -297,21 +293,26 @@ def home():
                 return jsonify({"error": "没有选择照片"})
             
             # 分析用户照片
-            user_tags = analyze_user_photo(photo)
+            user_tags = Analyzer.analyze_user_photo_thru_doubao(photo)
             print(f"🎯 用户标签: {user_tags}")
             
             # 映射到袜子标签
             sock_tags = map_user_to_sock(user_tags)
             print(f"🧦 袜子标签: {sock_tags}")
             
+            hf_api_url = os.getenv('HF_API_URL')
+            hf_api_token = os.getenv('HF_API_TOKEN')
+
             # 生成袜子图片
-            image_url = generate_sock_image(sock_tags)
+            #TO-DO: FIX THIS
+            hf_generator = HFGenerator(hf_api_token, hf_api_url)
+            image = hf_generator.generate()
             
             # 返回结果
             return render_template('result.html', 
                                 user_tags=user_tags, 
                                 sock_tags=sock_tags, 
-                                image_url=image_url)
+                                image_url=image)
             
         except Exception as e:
             print(f"❌ 处理请求时出错: {e}")
